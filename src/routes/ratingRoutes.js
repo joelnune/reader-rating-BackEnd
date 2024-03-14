@@ -4,6 +4,6 @@ import {
 } from '../controllers/ratingController.js'
 const router = express.Router();
 
-router.get('/insert-rating', insertRating);
+router.post('/insert-rating', insertRating);
 
 export default router;

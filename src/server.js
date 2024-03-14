@@ -15,6 +15,6 @@ app.use(cors());
 app.get('/ready', (req, res) => res.status(200).send({ status: 'ok' }));
 app.get('/live', (req, res) => res.status(200).send({ status: 'ok' }));
 
-app.use('/Rating',RatingRoutes);
+app.use('/rating',RatingRoutes);
 
 export default app;

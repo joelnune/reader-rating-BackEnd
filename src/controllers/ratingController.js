@@ -1,19 +1,27 @@
 import mongoose from "mongoose";
 import dotenv from 'dotenv';
+import BooksRating from "../models/ratingModel.js";
 dotenv.config({ path: 'src/.env' });
 const insertRating  =  async(req,res) => {
+
+const booksRating = BooksRating
+
 console.log("Insert Rating...")
 const PASSWD = process.env.DB_PASSWORD
 const ADMIN = process.env.DB_ADMIN
-//let RatingName = req.params.RatingName
-//console.log( "Ratingname: ", RatingName)
-console.log(ADMIN)
-try {
-await mongoose.connect(`mongodb+srv://${ADMIN}:${PASSWD}@cluster-readerrating.2r0grde.mongodb.net/`);
-console.log(mongoose.connection.readyState);
+
+console.log(req.body);
+const data = req.body
+
+const myRating = new BooksRating({ userId: data.userId,
+    bookId: data.bookId,
+    comment: data.comment,
+    rating: data.rating});
+
+await myRating.save()
+
+res.send("Ok")
 }
-catch(e){
-console.log("failed");
-}
-}
+
+
 export {insertRating};
