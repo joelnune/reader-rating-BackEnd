@@ -3,9 +3,6 @@ import dotenv from 'dotenv';
 import BooksRating from "../models/ratingModel.js";
 dotenv.config({ path: 'src/.env' });
 const insertRating  =  async(req,res) => {
-
-const booksRating = BooksRating
-
 console.log("Insert Rating...")
 const PASSWD = process.env.DB_PASSWORD
 const ADMIN = process.env.DB_ADMIN
