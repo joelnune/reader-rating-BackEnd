@@ -34,8 +34,11 @@ const Login = async(req,res) => {
   try {
   const data = req.body
   const myUser= User
+  const userExist = await User.exists({ userEmail: data.userEmail });
+  if (!userExist)
+  return res.status(401).send({ message: "Wrong e-mail or password" });
+
   const getUser = await myUser.find({userEmail: data.userEmail}).exec();
-  
   const userHash = getUser[0].passwd
   const inputPasswd = data.passwd
  
@@ -50,15 +53,15 @@ const Login = async(req,res) => {
   {
     res.status(401).send({
       message: 'Wrong E-mail or password',
-      hasError: true,
+      hasError: false,
   });
   }
  
 });
   } catch (error){
     console.log(error)
-    res.status(401).send({
-      message: 'Wrong E-mail or password',
+    res.status(500).send({
+      message: 'Something goes wrong in the request',
       hasError: true,
   });
   }
