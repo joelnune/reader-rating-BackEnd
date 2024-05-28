@@ -13,7 +13,7 @@ app.listen(port, async () => {
         console.log(mongoose.connection.readyState == 1 ? "Connection Ok": "Error on Connection");
         }
         catch(e){
-        console.log("failed");
+        console.log(e);
         }
     console.log(`Running service on port ${port}`);
 });
