@@ -1,13 +1,12 @@
-import mongoose from "mongoose";
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt'
 import User from "../models/userModel.js";
-dotenv.config({ path: 'src/.env' });
+import jwt from "jsonwebtoken"
+
+dotenv.config();
 
 const createUser  =  async(req,res) => {
 console.log("Creating User...")
-const PASSWD = process.env.DB_PASSWORD
-const ADMIN = process.env.DB_ADMIN
 
 console.log(req.body);
 const data = req.body
@@ -33,7 +32,8 @@ await bcrypt
 const Login = async(req,res) => {
   try {
   const data = req.body
-  const myUser= User
+  const myUser = User
+  const mySecret = process.env.SECRET
   const userExist = await User.exists({ userEmail: data.userEmail });
   if (!userExist)
   return res.status(401).send({ message: "Wrong e-mail or password" });
@@ -45,9 +45,11 @@ const Login = async(req,res) => {
   bcrypt.compare(inputPasswd, userHash, function(err, result) {
     if (result) {
       console.log("Correct Password")
-      res.status(200).send({
-        message: 'Login Sucessful',
-        hasError: false,
+      
+      const token = jwt.sign({userId: getUser[0].userId},mySecret,{expiresIn:3600})
+      res.status(200).json({
+        status: 'Login successful',
+        token
     });
   } else
   {
