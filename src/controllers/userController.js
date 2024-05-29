@@ -11,6 +11,10 @@ console.log("Creating User...")
 console.log(req.body);
 const data = req.body
 
+const userExist = await User.exists({ userEmail: data.userEmail });
+if (userExist)
+return res.status(409).send({ message: "Email already exists" });
+
 await bcrypt
   .genSalt(10)
   .then(salt => {
