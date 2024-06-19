@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import bcrypt from 'bcrypt'
 import User from "../models/userModel.js";
 import jwt from "jsonwebtoken"
+import { v4 as uuidv4 } from 'uuid';
 
 dotenv.config();
 
@@ -23,7 +24,9 @@ await bcrypt
   })
   .then(hash => {
     console.log('Hash: ', hash)
-    const myUser = new User({ userId: data.userId,
+    const userId = uuidv4()
+    const myUser = new User({
+      userId: userId,
       passwd: hash,
       userName: data.userName,
       userEmail: data.userEmail});
@@ -39,9 +42,12 @@ const Login = async(req,res) => {
   const myUser = User
   const mySecret = process.env.SECRET
   const userExist = await User.exists({ userEmail: data.userEmail });
-  if (!userExist)
-  return res.status(401).send({ message: "Wrong e-mail or password" });
-
+  if (!userExist){
+    console.log("user do not exist")
+  return res.status(401).send({
+    auth: false,
+    message: "Wrong e-mail or password" });
+  }
   const getUser = await myUser.find({userEmail: data.userEmail}).exec();
   const userHash = getUser[0].passwd
   const inputPasswd = data.passwd
@@ -49,15 +55,16 @@ const Login = async(req,res) => {
   bcrypt.compare(inputPasswd, userHash, function(err, result) {
     if (result) {
       console.log("Correct Password")
-      
       const token = jwt.sign({userId: getUser[0].userId},mySecret,{expiresIn:3600})
       res.status(200).json({
-        status: 'Login successful',
+        auth: true,
         token
     });
   } else
   {
+    console.log("Incorrect Password")
     res.status(401).send({
+      auth: false,
       message: 'Wrong E-mail or password',
       hasError: false,
   });
@@ -67,6 +74,7 @@ const Login = async(req,res) => {
   } catch (error){
     console.log(error)
     res.status(500).send({
+      auth: false,
       message: 'Something goes wrong in the request',
       hasError: true,
   });
